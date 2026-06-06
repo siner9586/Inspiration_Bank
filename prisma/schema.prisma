@@ -58,6 +58,7 @@ model Idea {
   titles               IdeaTitle[]
   interests            IdeaInterest[]
   outputs              IdeaOutput[]
+  actionLogs           ActionLog[]
 
   @@index([status])
   @@index([type])
@@ -106,6 +107,41 @@ model IdeaOutput {
 
   @@index([ideaId])
   @@index([outputType])
+}
+
+model ActionLog {
+  id          String    @id @default(cuid())
+  ideaId      String
+  actionType  String
+  actionText  String
+  status      String    @default("pending")
+  resultNote  String    @default("")
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  @@index([ideaId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ProjectSeed {
+  id             String   @id @default(cuid())
+  name           String
+  description    String   @default("")
+  positioning    String   @default("")
+  targetUsers    String   @default("[]")
+  problem        String   @default("")
+  solution       String   @default("")
+  mvpScope       String   @default("[]")
+  roadmap        String   @default("[]")
+  relatedIdeaIds String   @default("[]")
+  status         String   @default("构思中")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 model AiCallLog {
