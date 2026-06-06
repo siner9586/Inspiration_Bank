@@ -58,6 +58,7 @@ model Idea {
   titles               IdeaTitle[]
   interests            IdeaInterest[]
   outputs              IdeaOutput[]
+  actionLogs           ActionLog[]
 
   @@index([status])
   @@index([type])
@@ -77,18 +78,18 @@ model IdeaTitle {
 }
 
 model IdeaInterest {
-  id               String   @id @default(cuid())
-  ideaId           String
-  daysSinceCreated Int
-  interestType     String
-  content          String
-  suggestedAction  String
-  milestone        String?
-  generatedBy      String?
-  engineType       String?
-  estimatedValueChange Int?
-  createdAt        DateTime @default(now())
-  idea             Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  id                    String   @id @default(cuid())
+  ideaId                String
+  daysSinceCreated      Int
+  interestType          String
+  content               String
+  suggestedAction       String
+  milestone             String?
+  generatedBy           String?
+  engineType            String?
+  estimatedValueChange  Int?
+  createdAt             DateTime @default(now())
+  idea                  Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
 
   @@index([ideaId])
   @@index([milestone])
@@ -108,26 +109,62 @@ model IdeaOutput {
   @@index([outputType])
 }
 
+model ActionLog {
+  id          String    @id @default(cuid())
+  ideaId      String
+  actionType  String
+  actionText  String
+  status      String    @default("started")
+  resultNote  String    @default("")
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+  idea        Idea      @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  @@index([ideaId])
+  @@index([actionType])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model ProjectSeed {
+  id             String   @id @default(cuid())
+  name           String
+  description    String   @default("")
+  positioning    String   @default("")
+  targetUsers    String   @default("[]")
+  problem        String   @default("")
+  solution       String   @default("")
+  mvpScope       String   @default("[]")
+  roadmap        String   @default("[]")
+  relatedIdeaIds String   @default("[]")
+  status         String   @default("构思中")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
 model AiCallLog {
-  id            String   @id @default(cuid())
-  provider      String
-  model         String
-  taskType      String
-  ideaId        String?
-  success       Boolean
-  latencyMs     Int
-  inputTokens   Int?
-  outputTokens  Int?
-  estimatedCost Float?
-  engineType    String?
-  apiCost       Float?
+  id                 String   @id @default(cuid())
+  provider           String
+  model              String
+  taskType           String
+  ideaId             String?
+  success            Boolean
+  latencyMs          Int
+  inputTokens        Int?
+  outputTokens       Int?
+  estimatedCost      Float?
+  engineType         String?
+  apiCost            Float?
   estimatedSavedCost Float?
-  ruleHitCount  Int?
-  templateHitCount Int?
-  lexiconHitCount Int?
-  fallbackUsed  Boolean  @default(false)
-  errorMessage  String?
-  createdAt     DateTime @default(now())
+  ruleHitCount       Int?
+  templateHitCount   Int?
+  lexiconHitCount    Int?
+  fallbackUsed       Boolean  @default(false)
+  errorMessage       String?
+  createdAt          DateTime @default(now())
 
   @@index([provider])
   @@index([taskType])
