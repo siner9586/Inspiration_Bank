@@ -8,6 +8,7 @@ import { IdeaAnalysisPanel } from "@/components/idea/IdeaAnalysisPanel";
 import { IdeaInterestTimeline } from "@/components/idea/IdeaInterestTimeline";
 import { IdeaOutputGenerator } from "@/components/idea/IdeaOutputGenerator";
 import { IdeaActions } from "@/components/idea/IdeaActions";
+import { IdeaExportPanel } from "@/components/export/IdeaExportPanel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ideaStatusLabels, ideaTypeLabels } from "@/types/idea";
@@ -58,6 +59,7 @@ export default async function IdeaDetailPage({ params }: PageProps) {
       </div>
 
       <IdeaValueCard idea={idea} />
+      <IdeaExportPanel idea={idea} />
 
       <Card>
         <CardHeader>
@@ -71,7 +73,9 @@ export default async function IdeaDetailPage({ params }: PageProps) {
 
       <IdeaAnalysisPanel idea={idea} titles={idea.titles} />
       <IdeaInterestTimeline interests={idea.interests} />
-      <IdeaOutputGenerator ideaId={idea.id} outputs={idea.outputs} />
+      <div id="outputs">
+        <IdeaOutputGenerator ideaId={idea.id} outputs={idea.outputs} />
+      </div>
     </div>
   );
 }

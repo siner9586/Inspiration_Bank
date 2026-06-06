@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/client";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { outputTypeLabels, type OutputType } from "@/types/idea";
 import { formatDateTime } from "@/lib/utils/date";
+import { MarkdownExportBox } from "@/components/reports/MarkdownExportBox";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export default async function OutputsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold text-ink">内容草稿</h1>
-        <p className="mt-2 text-sm text-slate-600">所有由灵感转化生成的草稿都会保存在这里。</p>
+        <p className="mt-2 text-sm text-slate-600">所有由灵感转化生成的草稿都会保存在这里，并支持复制与下载。</p>
       </div>
 
       {outputs.length ? (
@@ -41,10 +42,11 @@ export default async function OutputsPage() {
                   </Link>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-3">
                 <pre className="whitespace-pre-wrap rounded-md bg-slate-50 p-4 text-sm leading-6 text-slate-700">
                   {output.content}
                 </pre>
+                <MarkdownExportBox markdown={output.content} filename={`${output.title}.md`} />
               </CardContent>
             </Card>
           ))}
