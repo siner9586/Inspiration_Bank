@@ -1,0 +1,35 @@
+name: Idea Interest Cron
+
+on:
+  schedule:
+    - cron: "12 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  idea-interest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check cron URL
+        id: config
+        run: |
+          if [ -z "${{ secrets.APP_CRON_URL }}" ]; then
+            echo "APP_CRON_URL is not configured. Skipping cron call."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Call idea interest cron
+        if: steps.config.outputs.configured == 'true'
+        env:
+          APP_CRON_URL: ${{ secrets.APP_CRON_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          URL="${APP_CRON_URL%/}/api/cron/idea-interest?limit=20&provider=zero-cost"
+          if [ -n "$CRON_SECRET" ]; then
+            RESPONSE="$(curl -fsS -H "Authorization: Bearer ${CRON_SECRET}" "$URL")"
+          else
+            RESPONSE="$(curl -fsS "$URL")"
+          fi
+          echo "$RESPONSE" | jq '{ok, dryRun, provider, processed, success, failed, createdInterests}'

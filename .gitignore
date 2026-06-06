@@ -1,0 +1,10 @@
+node_modules
+.next
+dist
+coverage
+.env.local
+*.log
+tsconfig.tsbuildinfo
+evals/results/*.json
+prisma/dev.db
+prisma/dev.db-journal

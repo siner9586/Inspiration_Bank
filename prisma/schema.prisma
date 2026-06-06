@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserSettings {
+  id              String   @id @default(cuid())
+  focusDirections String   @default("")
+  platforms       String   @default("[]")
+  contentStyle    String   @default("")
+  resources       String   @default("")
+  skills          String   @default("")
+  conversionGoal  String   @default("content")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Idea {
+  id                   String         @id @default(cuid())
+  title                String
+  rawContent           String
+  summary              String         @default("")
+  type                 String         @default("other")
+  tags                 String         @default("[]")
+  source               String         @default("")
+  status               String         @default("analyzing")
+  initialValue         Int            @default(0)
+  currentValue         Int            @default(0)
+  valueTier            String         @default("闪念")
+  valueExplanation     String         @default("")
+  valueComponents      String         @default("{}")
+  feasibilityLevel     String         @default("中")
+  commercialValue      Int            @default(0)
+  contentValue         Int            @default(0)
+  viralityLevel        String         @default("中")
+  viralityScore        Int            @default(0)
+  productizationLevel  String         @default("中")
+  productizationScore  Int            @default(0)
+  shortVideoFit        String         @default("中")
+  longTermFit          String         @default("中")
+  personalFitScore     Int            @default(55)
+  riskLevel            String         @default("中")
+  priority             String         @default("中")
+  targetUsers          String         @default("[]")
+  monetizationMethods  String         @default("[]")
+  risks                String         @default("[]")
+  requiredResources    String         @default("[]")
+  nextMinimalAction    String         @default("")
+  recommendedPlatforms String         @default("[]")
+  productSuggestions   String         @default("[]")
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  archivedAt           DateTime?
+  titles               IdeaTitle[]
+  interests            IdeaInterest[]
+  outputs              IdeaOutput[]
+
+  @@index([status])
+  @@index([type])
+  @@index([createdAt])
+  @@index([currentValue])
+}
+
+model IdeaTitle {
+  id       String @id @default(cuid())
+  ideaId   String
+  title    String
+  platform String @default("")
+  score    Int    @default(0)
+  idea     Idea   @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  @@index([ideaId])
+}
+
+model IdeaInterest {
+  id               String   @id @default(cuid())
+  ideaId           String
+  daysSinceCreated Int
+  interestType     String
+  content          String
+  suggestedAction  String
+  milestone        String?
+  generatedBy      String?
+  engineType       String?
+  estimatedValueChange Int?
+  createdAt        DateTime @default(now())
+  idea             Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  @@index([ideaId])
+  @@index([milestone])
+  @@index([createdAt])
+}
+
+model IdeaOutput {
+  id         String   @id @default(cuid())
+  ideaId     String
+  outputType String
+  title      String
+  content    String
+  createdAt  DateTime @default(now())
+  idea       Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+
+  @@index([ideaId])
+  @@index([outputType])
+}
+
+model AiCallLog {
+  id            String   @id @default(cuid())
+  provider      String
+  model         String
+  taskType      String
+  ideaId        String?
+  success       Boolean
+  latencyMs     Int
+  inputTokens   Int?
+  outputTokens  Int?
+  estimatedCost Float?
+  engineType    String?
+  apiCost       Float?
+  estimatedSavedCost Float?
+  ruleHitCount  Int?
+  templateHitCount Int?
+  lexiconHitCount Int?
+  fallbackUsed  Boolean  @default(false)
+  errorMessage  String?
+  createdAt     DateTime @default(now())
+
+  @@index([provider])
+  @@index([taskType])
+  @@index([ideaId])
+  @@index([createdAt])
+}

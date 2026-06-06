@@ -1,0 +1,57 @@
+{
+  "name": "inspiration-bank",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma generate && next build",
+    "start": "next start",
+    "lint": "eslint . --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "eval:ai": "tsx evals/run-evals.ts",
+    "eval:zero": "AI_PROVIDER=zero-cost AI_ANALYZE_PROVIDER=zero-cost AI_MODEL=zero-cost-rule-engine tsx evals/run-evals.ts --engine zero-cost",
+    "cron:idea-interest:dry": "CRON_AI_PROVIDER=zero-cost tsx src/lib/cron/run-idea-interest-dry.ts",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:reset": "prisma db push --force-reset && pnpm run db:seed"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
+    "@prisma/client": "^5.22.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "lucide-react": "^0.468.0",
+    "next": "15.5.19",
+    "openai": "^4.77.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-hook-form": "^7.54.2",
+    "recharts": "^2.15.0",
+    "tailwind-merge": "^2.6.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "15.5.19",
+    "jsdom": "^25.0.1",
+    "postcss": "^8.4.49",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^3.4.17",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  }
+}
