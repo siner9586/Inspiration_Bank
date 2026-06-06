@@ -4,8 +4,15 @@ import { PrismaClient } from "@prisma/client";
 
 function prepareSqlitePath() {
   const url = process.env.DATABASE_URL ?? "";
-  if (!url.startsWith("file:/tmp/")) return;
-  const dbPath = url.replace(/^file:/, "");
+  const isRelativeSqlite = url === "" || url === "file:./dev.db" || url === "file:./prisma/dev.db" || url.startsWith("file:.");
+
+  if (process.env.NODE_ENV === "production" && isRelativeSqlite) {
+    process.env.DATABASE_URL = "file:/tmp/inspiration-bank.db";
+  }
+
+  const nextUrl = process.env.DATABASE_URL ?? "";
+  if (!nextUrl.startsWith("file:/tmp/")) return;
+  const dbPath = nextUrl.replace(/^file:/, "");
   mkdirSync(dirname(dbPath), { recursive: true });
 }
 
