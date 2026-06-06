@@ -1,0 +1,17 @@
+[build]
+command = "pnpm prisma db push && pnpm run build"
+publish = ".next"
+
+[build.environment]
+NODE_VERSION = "22"
+AI_PROVIDER = "zero-cost"
+AI_MODEL = "zero-cost-rule-engine"
+AI_FALLBACK_PROVIDER = "mock"
+AI_ANALYZE_PROVIDER = "zero-cost"
+AI_INTEREST_PROVIDER = "zero-cost"
+AI_OUTPUT_PROVIDER = "zero-cost"
+CRON_AI_PROVIDER = "zero-cost"
+DATABASE_URL = "file:./dev.db"
+
+[[plugins]]
+package = "@netlify/plugin-nextjs"
