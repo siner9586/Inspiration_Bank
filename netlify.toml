@@ -1,5 +1,5 @@
 [build]
-command = "pnpm prisma db push && pnpm run build"
+command = "pnpm run build"
 publish = ".next"
 
 [build.environment]
@@ -11,7 +11,8 @@ AI_ANALYZE_PROVIDER = "zero-cost"
 AI_INTEREST_PROVIDER = "zero-cost"
 AI_OUTPUT_PROVIDER = "zero-cost"
 CRON_AI_PROVIDER = "zero-cost"
-DATABASE_URL = "file:./dev.db"
+DATABASE_URL = "file:/tmp/inspiration-bank.db"
+NEXT_PUBLIC_APP_URL = "https://insp.ccwu.cc"
 
 [[plugins]]
 package = "@netlify/plugin-nextjs"
