@@ -54,6 +54,8 @@ CRON_AI_PROVIDER=zero-cost
 
 Then redeploy the site.
 
+For Git-connected deployments, pushing to `main` is the preferred deployment trigger. Avoid using the MCP proxy upload path for this project unless Netlify support specifically asks for it, because the Git integration provides clearer build logs and uses the configured production environment variables.
+
 ## Migration notes
 
 For the current project stage, `prisma db push` is acceptable because this is an MVP. For a production app with important data, prefer Prisma Migrate:
