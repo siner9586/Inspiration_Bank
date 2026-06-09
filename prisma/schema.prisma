@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -77,18 +77,18 @@ model IdeaTitle {
 }
 
 model IdeaInterest {
-  id               String   @id @default(cuid())
-  ideaId           String
-  daysSinceCreated Int
-  interestType     String
-  content          String
-  suggestedAction  String
-  milestone        String?
-  generatedBy      String?
-  engineType       String?
+  id                   String   @id @default(cuid())
+  ideaId               String
+  daysSinceCreated     Int
+  interestType         String
+  content              String
+  suggestedAction      String
+  milestone            String?
+  generatedBy          String?
+  engineType           String?
   estimatedValueChange Int?
-  createdAt        DateTime @default(now())
-  idea             Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  createdAt            DateTime @default(now())
+  idea                 Idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
 
   @@index([ideaId])
   @@index([milestone])
@@ -109,25 +109,25 @@ model IdeaOutput {
 }
 
 model AiCallLog {
-  id            String   @id @default(cuid())
-  provider      String
-  model         String
-  taskType      String
-  ideaId        String?
-  success       Boolean
-  latencyMs     Int
-  inputTokens   Int?
-  outputTokens  Int?
-  estimatedCost Float?
-  engineType    String?
-  apiCost       Float?
+  id                 String   @id @default(cuid())
+  provider           String
+  model              String
+  taskType           String
+  ideaId             String?
+  success            Boolean
+  latencyMs          Int
+  inputTokens        Int?
+  outputTokens       Int?
+  estimatedCost      Float?
+  engineType         String?
+  apiCost            Float?
   estimatedSavedCost Float?
-  ruleHitCount  Int?
-  templateHitCount Int?
-  lexiconHitCount Int?
-  fallbackUsed  Boolean  @default(false)
-  errorMessage  String?
-  createdAt     DateTime @default(now())
+  ruleHitCount       Int?
+  templateHitCount   Int?
+  lexiconHitCount    Int?
+  fallbackUsed       Boolean  @default(false)
+  errorMessage       String?
+  createdAt          DateTime @default(now())
 
   @@index([provider])
   @@index([taskType])
