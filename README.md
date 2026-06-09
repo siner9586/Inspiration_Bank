@@ -30,10 +30,34 @@ zero-cost provider 使用本地代码完成：
 
 OpenAI、OpenAI-compatible 和 Ollama provider 仍然保留，但它们是可选高级模式，不是必需条件。
 
+## 数据库：Neon Postgres
+
+项目的 active Prisma datasource 已从 SQLite 切换为 PostgreSQL。生产环境推荐使用 Neon Postgres。
+
+SQLite 文件数据库不适合 Netlify/Vercel 这类 serverless 生产环境长期持久化；Neon Postgres 更适合作为当前 Netlify 部署的生产数据库。
+
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+在本地 `.env`、Netlify 环境变量或其他部署平台中设置：
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/neondb?sslmode=require"
+```
+
+请使用 Neon 控制台提供的 pooled connection string，不要把真实连接串提交到 GitHub。
+
+更多说明见：`docs/neon-postgres.md`。
+
 ## 本地启动
 
 ```bash
 pnpm install
+pnpm run db:generate
 pnpm run db:push
 pnpm run db:seed
 pnpm run dev
@@ -49,7 +73,7 @@ http://localhost:3000
 
 ## 环境变量
 
-复制 `.env.example` 后保持默认即可：
+复制 `.env.example` 后设置 Neon Postgres 连接串：
 
 ```env
 AI_PROVIDER=zero-cost
@@ -70,10 +94,39 @@ AI_BASE_URL=
 AI_API_KEY=
 
 OLLAMA_BASE_URL=http://localhost:11434
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://USER:PASSWORD@HOST/neondb?sslmode=require"
 ```
 
 默认不需要任何第三方 AI API Key。
+
+## Netlify 部署
+
+当前完整 App 推荐部署到 Netlify 或 Vercel，并用 Cloudflare 负责 DNS/CDN/SSL。
+
+Netlify 构建设置：
+
+```text
+Framework preset: Next.js
+Build command: pnpm run build
+Publish directory: .next
+Install command: pnpm install
+```
+
+Netlify 环境变量至少设置：
+
+```env
+DATABASE_URL=<Neon pooled connection string>
+AI_PROVIDER=zero-cost
+AI_MODEL=zero-cost-rule-engine
+AI_FALLBACK_PROVIDER=mock
+AI_ANALYZE_PROVIDER=zero-cost
+AI_INTEREST_PROVIDER=zero-cost
+AI_OUTPUT_PROVIDER=zero-cost
+CRON_AI_PROVIDER=zero-cost
+CRON_SECRET=<your secret>
+```
+
+Cloudflare Pages 不建议直接部署当前完整 App；当前项目包含 API Routes 和 Prisma 数据库访问，更适合 Node.js 友好的部署平台。Cloudflare 可继续用于域名、CDN、SSL、安全和 Worker Cron。
 
 ## 使用 zero-cost provider
 
@@ -244,45 +297,22 @@ OpenAI-compatible：
 
 ```env
 AI_PROVIDER=openai-compatible
-AI_BASE_URL=https://your-compatible-endpoint.example/v1
+AI_BASE_URL=https://example.com/v1
 AI_API_KEY=your-key
-AI_MODEL=your-model
+AI_MODEL=provider/model
 AI_FALLBACK_PROVIDER=mock
 ```
 
-不要把 cron 默认切到付费 provider，除非你明确接受后台自动运行可能产生费用。
-
-## 如何避免产生费用
-
-- 保持 `AI_PROVIDER=zero-cost`。
-- 保持 `AI_ANALYZE_PROVIDER/AI_INTEREST_PROVIDER/AI_OUTPUT_PROVIDER=zero-cost`。
-- 保持 `CRON_AI_PROVIDER=zero-cost`。
-- 不填写外部 API Key。
-- 在 `/settings` 查看智能引擎设置。
-- 在 `/admin/evals` 查看 API 成本估算。
-
-## 文档
-
-- `docs/zero-cost-intelligence.md`
-- `docs/github-actions-cron.md`
-- `docs/cloudflare-zero-cost.md`
-- `docs/ui-design-notes.md`
-
-## 常用命令
+## 部署验证
 
 ```bash
+pnpm run db:generate
+pnpm run db:push
+pnpm run db:seed
 pnpm run typecheck
 pnpm run lint
 pnpm run test
 pnpm run build
 pnpm run eval:zero
-pnpm run eval:ai
+pnpm run cron:idea-interest:dry
 ```
-
-## 后续路线图
-
-- 增加用户可编辑词库和规则权重。
-- 为 zero-cost eval 增加人工标注对比。
-- 增加本地 Web Worker / IndexedDB 离线模式。
-- 可选接入本地 Ollama 多模型路由。
-- 探索 Cloudflare D1 / R2 作为开放平台扩展，不影响当前 SQLite 本地开发。
