@@ -5,29 +5,37 @@ function assertDatabaseUrl() {
 
   if (!url) {
     throw new Error(
-      "DATABASE_URL is required. This project now uses PostgreSQL in production; set DATABASE_URL to your Neon Postgres connection string."
+      "DATABASE_URL is required. Set it to your Neon Postgres connection string in Netlify environment variables."
     );
   }
 
   if (url.startsWith("file:")) {
     throw new Error(
-      "SQLite file DATABASE_URL values are no longer supported by the active Prisma schema. Use a PostgreSQL connection string, for example a Neon pooled DATABASE_URL."
+      "SQLite file DATABASE_URL values are not supported by the active PostgreSQL Prisma schema. Remove file: DATABASE_URL overrides and use Neon Postgres."
     );
   }
 }
-
-assertDatabaseUrl();
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;
 };
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+function createPrismaClient() {
+  assertDatabaseUrl();
+  return new PrismaClient({
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"]
   });
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
 }
+
+function getPrismaClient() {
+  globalForPrisma.prisma ??= createPrismaClient();
+  return globalForPrisma.prisma;
+}
+
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop, receiver) {
+    const client = getPrismaClient();
+    const value = Reflect.get(client, prop, receiver);
+    return typeof value === "function" ? value.bind(client) : value;
+  }
+});
