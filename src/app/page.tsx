@@ -13,6 +13,7 @@ import { IdeaTrendChart } from "@/components/dashboard/IdeaTrendChart";
 import { IdeaTypeChart } from "@/components/dashboard/IdeaTypeChart";
 import { RecommendedIdeas } from "@/components/dashboard/RecommendedIdeas";
 import { EmptyDashboard } from "@/components/dashboard/EmptyDashboard";
+import { WechatQrPopover } from "@/components/dashboard/WechatQrPopover";
 import { formatMoney } from "@/lib/utils/money";
 import { ideaTypeLabels } from "@/types/idea";
 import { getDaysSinceCreated } from "@/lib/scoring/valuation";
@@ -97,6 +98,7 @@ export default async function DashboardPage() {
             <Badge tone="green">当前引擎：{runtime.currentProvider}</Badge>
             <Badge tone="gold">API 成本：￥0</Badge>
             <Badge tone="slate">外部模型：{runtime.externalApiEnabled ? "已启用" : "未启用"}</Badge>
+            <WechatQrPopover />
             <Badge tone="blue">可离线分析：{runtime.currentProvider === "zero-cost" ? "是" : "视配置而定"}</Badge>
           </div>
           <div className="mt-2 text-xs text-slate-500">所有金额均为启发性估值，不代表真实市场价格。</div>
